@@ -1,13 +1,10 @@
 import yfinance as yf
 import pandas_ta as ta
-import requests
 import json
-import os
 
 # --- 1. الإعدادات ---
 GOLD_TICKER = "GC=F"
-# سنقرأ الرابط من الـ Secrets لاحقاً
-N8N_WEBHOOK_URL = os.environ.get("N8N_WEBHOOK_URL")
+OUTPUT_FILENAME = "analysis.json"
 
 # --- 2. سحب البيانات ---
 print("--> الخطوة 1: جاري سحب بيانات الذهب...")
@@ -18,8 +15,6 @@ data.columns = data.columns.droplevel(1)
 
 if data.empty:
     print("!!! فشل في سحب البيانات.")
-elif N8N_WEBHOOK_URL is None:
-    print("!!! خطأ: لم يتم العثور على رابط الويبهوك في الـ Secrets.")
 else:
     print("... نجح سحب البيانات!")
 
@@ -55,7 +50,7 @@ else:
     elif not is_long_term_uptrend and not is_macd_bullish:
         signal = "Sell"
 
-    # --- 5. تجهيز وإرسال البيانات إلى n8n ---
+    # --- 5. تجهيز البيانات للحفظ ---
     output_data = {
         "asset": "الذهب (XAU/USD)",
         "price": round(price, 2),
@@ -68,10 +63,8 @@ else:
         }
     }
 
-    print("--> الخطوة 4: جاري إرسال البيانات إلى n8n...")
-    try:
-        response = requests.post(N8N_WEBHOOK_URL, json=output_data)
-        response.raise_for_status()
-        print("... تم إرسال البيانات بنجاح إلى n8n!")
-    except requests.exceptions.RequestException as e:
-        print(f"!!! حدث خطأ أثناء إرسال البيانات إلى n8n: {e}")
+    # --- 6. حفظ المخرجات في ملف ---
+    with open(OUTPUT_FILENAME, 'w', encoding='utf-8') as f:
+        json.dump(output_data, f, ensure_ascii=False, indent=4)
+
+    print(f"--> الخطوة 4: تم حفظ التحليل بنجاح في ملف {OUTPUT_FILENAME}")
