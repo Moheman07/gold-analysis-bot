@@ -30,9 +30,12 @@ jobs:
       - name: تشغيل سكربت تحليل VIX
         run: python get_vix.py
 
+      - name: تشغيل سكربت تحليل العائدات
+        run: python get_yields.py
+
       - name: حفظ وتحديث ملفات التحليل
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "تحديث تلقائي لبيانات التحليل"
-          # نحدد كلا الملفين ليتم تحديثهما
-          file_pattern: analysis.json vix_data.json
+          # نحدد كل الملفات ليتم تحديثها
+          file_pattern: analysis.json vix_data.json yield_data.json
