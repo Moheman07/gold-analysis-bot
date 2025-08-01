@@ -7,7 +7,7 @@ import os
 # --- 1. الإعدادات ---
 GOLD_TICKER = "GC=F"
 # سنقرأ الرابط من الـ Secrets لاحقاً
-N8N_WEBHOOK_URL = os.environ.get("https://n8n.srv908468.hstgr.cloud/webhook-test/58983e95-6065-4353-9afb-928908210708")
+N8N_WEBHOOK_URL = os.environ.get("N8N_WEBHOOK_URL")
 
 # --- 2. سحب البيانات ---
 print("--> الخطوة 1: جاري سحب بيانات الذهب...")
