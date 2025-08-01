@@ -1,4 +1,4 @@
-name: تحليل الذهب الفني
+name: تحليل الذهب والأسواق
 
 on:
   schedule:
@@ -24,11 +24,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install numpy==1.26.4 pandas==2.2.2 pandas-ta yfinance requests
 
-      - name: تشغيل سكربت التحليل
+      - name: تشغيل سكربت تحليل الذهب
         run: python gold_analyzer.py
 
-      - name: حفظ وتحديث ملف التحليل
+      - name: تشغيل سكربت تحليل VIX
+        run: python get_vix.py
+
+      - name: حفظ وتحديث ملفات التحليل
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "تحديث تلقائي لبيانات التحليل"
-          file_pattern: analysis.json
+          # نحدد كلا الملفين ليتم تحديثهما
+          file_pattern: analysis.json vix_data.json
