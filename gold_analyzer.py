@@ -11,6 +11,10 @@ print("--> الخطوة 1: جاري سحب بيانات الذهب...")
 # نحتاج لسحب بيانات الحجم (Volume) لذا لن نستخدم حجة auto_adjust
 data = yf.download(GOLD_TICKER, period="260d", interval="1d", auto_adjust=False)
 
+# --- هذا هو السطر الذي يحل المشكلة ---
+data.columns = [col.lower() for col in data.columns]
+# -----------------------------------------
+
 if data.empty:
     print("!!! فشل في سحب البيانات.")
 else:
@@ -38,16 +42,16 @@ else:
     # --- 4. توليد الإشارة النهائية ---
     print("--> الخطوة 3: جاري توليد إشارة التداول النهائية...")
     latest_data = data.iloc[-1]
-
-    price = latest_data['Close']
+    
+    price = latest_data['close']
     sma200 = latest_data['SMA_200']
     rsi = latest_data['RSI_14']
     macd_line = latest_data['MACD_12_26_9']
     macd_signal_line = latest_data['MACDs_12_26_9']
-
+    
     is_long_term_uptrend = price > sma200
     is_macd_bullish = macd_line > macd_signal_line
-
+    
     signal = "Neutral"
     if is_long_term_uptrend and is_macd_bullish and rsi > 52:
         signal = "Strong Buy"
@@ -73,7 +77,7 @@ else:
             "obv_signal": "positive" if latest_data['OBV'] > latest_data['OBV_SMA_20'] else "negative"
         }
     }
-
+    
     # --- 6. حفظ المخرجات في ملف ---
     with open(OUTPUT_FILENAME, 'w', encoding='utf-8') as f:
         json.dump(output_data, f, ensure_ascii=False, indent=4)
