@@ -1,0 +1,30 @@
+name: تحليل الذهب الفني
+
+on:
+  schedule:
+    # يعمل الساعة 8 صباحاً بتوقيت UTC، أي 11 صباحاً بتوقيت بغداد
+    - cron: '0 8 * * *'
+  workflow_dispatch: # يسمح بالتشغيل اليدوي أيضاً
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: سحب كود المستودع
+        uses: actions/checkout@v3
+
+      - name: إعداد بيئة بايثون
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: تثبيت المكتبات المطلوبة
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy==1.26.4 pandas==2.2.2 pandas-ta yfinance requests
+
+      - name: تشغيل سكربت التحليل
+        env:
+          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}
+        run: python gold_analyzer.py
