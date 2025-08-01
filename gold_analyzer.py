@@ -10,9 +10,8 @@ OUTPUT_FILENAME = "analysis.json"
 print("--> الخطوة 1: جاري سحب بيانات الذهب...")
 data = yf.download(GOLD_TICKER, period="260d", interval="1d", auto_adjust=False)
 
-# --- هذا هو السطر المصحح الذي يحل المشكلة ---
+# إصلاح أسماء الأعمدة
 data.columns = [col[0].lower() for col in data.columns]
-# -----------------------------------------
 
 if data.empty:
     print("!!! فشل في سحب البيانات.")
@@ -35,6 +34,11 @@ else:
         ]
     )
     data.ta.strategy(custom_analysis)
+
+    # --- هذا هو السطر الجديد الذي يحل المشكلة ---
+    data.ta.sma(close=data['OBV'], length=20, append=True)
+    # -----------------------------------------
+
     print("... تم حساب المؤشرات.")
 
     # --- 4. توليد الإشارة النهائية ---
