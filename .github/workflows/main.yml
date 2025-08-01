@@ -25,6 +25,10 @@ jobs:
           pip install numpy==1.26.4 pandas==2.2.2 pandas-ta yfinance requests
 
       - name: تشغيل سكربت التحليل
-        env:
-          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}
         run: python gold_analyzer.py
+
+      - name: حفظ وتحديث ملف التحليل
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "تحديث تلقائي لبيانات التحليل"
+          file_pattern: analysis.json
