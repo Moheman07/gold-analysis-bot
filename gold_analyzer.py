@@ -8,10 +8,8 @@ OUTPUT_FILENAME = "analysis.json"
 
 # --- 2. سحب البيانات ---
 print("--> الخطوة 1: جاري سحب بيانات الذهب...")
-data = yf.download(GOLD_TICKER, period="250d", interval="1d")
-
-# إصلاح هيكل الأعمدة
-data.columns = data.columns.droplevel(1)
+# نحتاج لسحب بيانات الحجم (Volume) لذا لن نستخدم حجة auto_adjust
+data = yf.download(GOLD_TICKER, period="260d", interval="1d", auto_adjust=False)
 
 if data.empty:
     print("!!! فشل في سحب البيانات.")
@@ -20,11 +18,21 @@ else:
 
     # --- 3. حساب المؤشرات الفنية ---
     print("--> الخطوة 2: جاري حساب المؤشرات الفنية...")
-    data.ta.sma(length=50, append=True)
-    data.ta.sma(length=200, append=True)
-    data.ta.rsi(length=14, append=True)
-    data.ta.macd(append=True)
-    data.ta.bbands(append=True)
+    # إضافة المؤشرات الجديدة ATR و OBV
+    custom_analysis = ta.Strategy(
+        name="Custom Strategy",
+        description="SMA, MACD, RSI, BBands, ATR, OBV",
+        ta=[
+            {"kind": "sma", "length": 50},
+            {"kind": "sma", "length": 200},
+            {"kind": "rsi"},
+            {"kind": "macd"},
+            {"kind": "bbands"},
+            {"kind": "atr"},
+            {"kind": "obv"}
+        ]
+    )
+    data.ta.strategy(custom_analysis)
     print("... تم حساب المؤشرات.")
 
     # --- 4. توليد الإشارة النهائية ---
@@ -59,7 +67,10 @@ else:
             "rsi_14": round(rsi, 2),
             "sma_200": round(sma200, 2),
             "macd_line": round(macd_line, 2),
-            "macd_signal": round(macd_signal_line, 2)
+            "macd_signal": round(macd_signal_line, 2),
+            # إضافة قيم المؤشرات الجديدة للمخرجات
+            "atr": round(latest_data['ATRr_14'], 2),
+            "obv_signal": "positive" if latest_data['OBV'] > latest_data['OBV_SMA_20'] else "negative"
         }
     }
 
