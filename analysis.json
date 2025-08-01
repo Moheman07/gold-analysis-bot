@@ -1,0 +1,11 @@
+{
+    "asset": "الذهب (XAU/USD)",
+    "price": 3394.5,
+    "technical_analysis": {
+        "signal": "Neutral",
+        "rsi_14": 56.9,
+        "sma_200": 2999.16,
+        "macd_line": 0.91,
+        "macd_signal": 4.1
+    }
+}
